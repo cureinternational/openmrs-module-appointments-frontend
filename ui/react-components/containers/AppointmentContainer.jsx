@@ -30,6 +30,10 @@ class AppointmentContainer extends Component {
             this.setState({messages: await getMessages(getLocale())});
             this.setState({appConfig: await getAppConfig()});
             this.setState({holidays:  await getFromGlobalProperty('appointments.holidays')});
+            if (this.state.holidays) {
+                this.setState({holidays: this.state.holidays.replace(/\s+/g, '').split(',')});
+            }
+
         })();
         moment.locale(getLocale() === 'pt_BR' ? 'pt-BR': getLocale());
     }
