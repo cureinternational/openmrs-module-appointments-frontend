@@ -4,7 +4,7 @@ angular.module('bahmni.appointments')
     .controller('AppointmentsListViewController', ['$scope', '$state', '$rootScope', '$translate', '$stateParams', 'spinner',
         'appointmentsService', 'appService', 'appointmentsFilter', 'printer', 'checkinPopUp', 'confirmBox', 'ngDialog', 'messagingService', 'appointmentCommonService', '$interval','$window','$location',
         function ($scope, $state, $rootScope, $translate, $stateParams, spinner, appointmentsService, appService,
-                  appointmentsFilter, printer, checkinPopUp, confirmBox, ngDialog, messagingService, appointmentCommonService, $interval, $window, $location,) {
+                  appointmentsFilter, printer, checkinPopUp, confirmBox, ngDialog, messagingService, appointmentCommonService, $interval, $window, $location) {
             $scope.enableSpecialities = appService.getAppDescriptor().getConfigValue('enableSpecialities');
             $scope.enableServiceTypes = appService.getAppDescriptor().getConfigValue('enableServiceTypes');
             $scope.priorityOptionsList = appService.getAppDescriptor().getConfigValue('priorityOptionsList') || [];
@@ -114,9 +114,9 @@ angular.module('bahmni.appointments')
 
             var updateAppointments = function (response){
                 $scope.appointments = response.data;
-                $scope.filteredAppointments = appointmentsFilter($scope.appointments, $stateParams.filterParams);
+                var filtered = appointmentsFilter($scope.appointments, $stateParams.filterParams);
+                setFilteredAppointments(filtered);
                 if($scope.getCurrentTabName() === AWAITING_APPOINTMENTS_TAB_NAME){
-                    modifyAppointmentPriorities();
                     $scope.filteredAppointments = _.sortBy($scope.filteredAppointments, "dateCreated");
                 }
                 $rootScope.appointmentsData = $scope.filteredAppointments;
@@ -134,16 +134,38 @@ angular.module('bahmni.appointments')
             };
 
             var modifyAppointmentPriorities = function(){
-                $scope.appointments.map((appointment) => {
-                    var priorityModified = false;
-                    $scope.priorityOptionsList.map((priority) => {
-                        if(priority.value === appointment.priority){
-                            appointment.priority = priority.label;
-                            priorityModified = true;
+                $scope.filteredAppointments.forEach((appointment) => {
+                    if (appointment.priority && $scope.priorityOptionsList && $scope.priorityOptionsList.length > 0) {
+                        const priorityConfig = $scope.priorityOptionsList.find(priority => priority.value === appointment.priority);
+                        if (priorityConfig && priorityConfig.label) {
+                            appointment.priority = priorityConfig.label;
                         }
-                    });
-                    if(priorityModified) return ;
+                    }
                 });
+            }
+
+            // Helper function to apply priority mapping to any appointment list
+            var applyPriorityMapping = function(appointments) {
+                if (!appointments || !$scope.priorityOptionsList || $scope.priorityOptionsList.length === 0) {
+                    return appointments;
+                }
+                
+                appointments.forEach((appointment) => {
+                    if (appointment.priority) {
+                        const priorityConfig = $scope.priorityOptionsList.find(priority => priority.value === appointment.priority);
+                        if (priorityConfig && priorityConfig.label) {
+                            appointment.priority = priorityConfig.label;
+                        }
+                    }
+                });
+                return appointments;
+            }
+
+            var setFilteredAppointments = function(appointments) {
+                $scope.filteredAppointments = appointments;
+                if($scope.getCurrentTabName() === AWAITING_APPOINTMENTS_TAB_NAME){
+                    $scope.filteredAppointments = applyPriorityMapping($scope.filteredAppointments);
+                }
             }
 
             var sortAppointmentsByAppointmentCreationDate = function(a,b){
@@ -206,7 +228,7 @@ angular.module('bahmni.appointments')
                 if ($state.params.doFetchAppointmentsData) {
                     spinner.forPromise(setAppointments(params));
                 } else {
-                    $scope.filteredAppointments = appointmentsFilter($state.params.appointmentsData, $stateParams.filterParams);
+                    setFilteredAppointments(appointmentsFilter($state.params.appointmentsData, $stateParams.filterParams));
                     $state.params.doFetchAppointmentsData = true;
                 }
             };
@@ -221,10 +243,11 @@ angular.module('bahmni.appointments')
             };
 
             var setFilteredAppointmentsInPatientSearch = function (appointments) {
-                $scope.filteredAppointments = appointments.map(function (appointment) {
+                var mappedAppointments = appointments.map(function (appointment) {
                     appointment.date = appointment.startDateTime;
                     return appointment;
                 });
+                setFilteredAppointments(mappedAppointments);
             };
 
             $scope.displaySearchedPatient = function (appointments) {
@@ -247,7 +270,7 @@ angular.module('bahmni.appointments')
 
             $scope.goBackToPreviousView = function () {
                 $scope.searchedPatient = false;
-                $scope.filteredAppointments = oldPatientData;
+                setFilteredAppointments(oldPatientData);
                 $stateParams.isFilterOpen = true;
                 $scope.isFilterOpen = true;
                 $stateParams.isSearchEnabled = false;
@@ -320,7 +343,7 @@ angular.module('bahmni.appointments')
                 return $stateParams.filterParams;
             }, function (newValue, oldValue) {
                 if (newValue !== oldValue && !isNullOrEmpty(oldValue)) {
-                    $scope.filteredAppointments = appointmentsFilter($scope.appointments || $state.params.appointmentsData, $stateParams.filterParams);
+                    setFilteredAppointments(appointmentsFilter($scope.appointments || $state.params.appointmentsData, $stateParams.filterParams));
                 }
             }, true);
 
@@ -360,13 +383,13 @@ angular.module('bahmni.appointments')
                 if ($scope.reverseSort) {
                     sortedNonEmptyObjects.reverse();
                 }
-                $scope.filteredAppointments = sortedNonEmptyObjects.concat(emptyObjects);
+                setFilteredAppointments(sortedNonEmptyObjects.concat(emptyObjects));
                 $scope.sortColumn = sortColumn;
                 $scope.reverseSort = !$scope.reverseSort;
             };
 
             $rootScope.$on('awaitingFilterResponse', function (event, response) {
-                $scope.filteredAppointments = response.data;
+                setFilteredAppointments(response.data);
             });
             
             $scope.printPage = function () {
@@ -446,7 +469,7 @@ angular.module('bahmni.appointments')
                     $scope.selectedAppointment.status = response.data.status;
                     closeConfirmBox();
                     messagingService.showMessage('info', message);
-                    $scope.filteredAppointments = appointmentsFilter($scope.appointments, $stateParams.filterParams);
+                    setFilteredAppointments(appointmentsFilter($scope.appointments, $stateParams.filterParams));
                 });
             };
 
