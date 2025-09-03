@@ -133,17 +133,6 @@ angular.module('bahmni.appointments')
                 });
             };
 
-            var modifyAppointmentPriorities = function(){
-                $scope.filteredAppointments.forEach((appointment) => {
-                    if (appointment.priority && $scope.priorityOptionsList && $scope.priorityOptionsList.length > 0) {
-                        const priorityConfig = $scope.priorityOptionsList.find(priority => priority.value === appointment.priority);
-                        if (priorityConfig && priorityConfig.label) {
-                            appointment.priority = priorityConfig.label;
-                        }
-                    }
-                });
-            }
-
             // Helper function to apply priority mapping to any appointment list
             var applyPriorityMapping = function(appointments) {
                 if (!appointments || !$scope.priorityOptionsList || $scope.priorityOptionsList.length === 0) {
