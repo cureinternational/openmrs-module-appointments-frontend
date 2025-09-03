@@ -10,15 +10,15 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js 16.x
-      uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v4
       with:
-        node-version: '16.x'
+        node-version: '18.x'
         cache: 'npm'
     - run: npm install
-    - run: npm test
-    - run: npm run build
+    - run: NODE_OPTIONS="--openssl-legacy-provider" npm test
+    - run: NODE_OPTIONS="--openssl-legacy-provider" npm run build
