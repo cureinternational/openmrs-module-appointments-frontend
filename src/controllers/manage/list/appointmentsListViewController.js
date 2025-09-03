@@ -163,9 +163,7 @@ angular.module('bahmni.appointments')
 
             var setFilteredAppointments = function(appointments) {
                 $scope.filteredAppointments = appointments;
-                if($scope.getCurrentTabName() === AWAITING_APPOINTMENTS_TAB_NAME){
-                    $scope.filteredAppointments = applyPriorityMapping($scope.filteredAppointments);
-                }
+                $scope.filteredAppointments = applyPriorityMapping($scope.filteredAppointments);
             }
 
             var sortAppointmentsByAppointmentCreationDate = function(a,b){
