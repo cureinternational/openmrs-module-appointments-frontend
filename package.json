@@ -4,7 +4,7 @@
     "description": "An appointment app for bahmni/openmrs.",
     "license": "AGPLv3",
     "engines": {
-        "node": ">=12 <15"
+        "node": ">=14 <19"
     },
     "scripts": {
         "build-react": "cd ui && npm run build-react",
