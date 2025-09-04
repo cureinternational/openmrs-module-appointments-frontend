@@ -135,7 +135,7 @@ angular.module('bahmni.appointments')
 
             // Helper function to apply priority mapping to any appointment list
             var applyPriorityMapping = function(appointments) {
-                if (!appointments || !$scope.priorityOptionsList || $scope.priorityOptionsList.length === 0) {
+                if (!appointments || !Array.isArray(appointments) || !$scope.priorityOptionsList || $scope.priorityOptionsList.length === 0) {
                     return appointments;
                 }
                 

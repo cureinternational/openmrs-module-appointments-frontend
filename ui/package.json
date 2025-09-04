@@ -92,7 +92,7 @@
   "scripts": {
     "test-react": "TZ=UTC jest",
     "test-react-watch": "TZ=UTC jest --watch",
-    "build-react": "webpack --env=production -p",
+    "build-react": "NODE_OPTIONS=\"--openssl-legacy-provider\" webpack --env=production -p",
     "build-react-dev": "webpack --env=developemnt --watch",
     "storybook": "start-storybook"
   },
