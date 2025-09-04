@@ -735,7 +735,7 @@ describe('AppointmentsListViewController', function () {
             scope.appointments = [appointment];
             $state.params = {doFetchAppointmentsData: true};
             _appointmentsFilter.and.callFake(function () {
-                return appointment;
+                return [appointment]; // Return array instead of single object
             });
             stateparams.filterParams = {};
             createController();
@@ -743,7 +743,7 @@ describe('AppointmentsListViewController', function () {
             stateparams.filterParams = {serviceUuids: ['serviceUuid']};
             scope.$digest();
 
-            expect(scope.filteredAppointments).toEqual(appointment);
+            expect(scope.filteredAppointments).toEqual([appointment]); // Expect array
         });
     });
 
