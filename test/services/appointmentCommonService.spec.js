@@ -91,7 +91,6 @@ describe('AppointmentCommonService', function () {
 
     describe('addProviderToFilterFromQueryString', function() {
         beforeEach(function() {
-            // Reset the mock state before each test
             mockState.params.filterParams = { providerUuids: [] };
         });
         
