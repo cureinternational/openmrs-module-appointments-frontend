@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bahmni.appointments')
-    .service('appointmentsService', ['$http', 'appService',
-        function ($http, appService) {
+    .service('appointmentsService', ['$http', 'appService', 'priorityMappingService',
+        function ($http, appService, priorityMappingService) {
             this.save = function (appointment) {
                 return $http.post(Bahmni.Appointments.Constants.createAppointmentUrl, appointment, {
                     withCredentials: true,
@@ -13,6 +13,11 @@ angular.module('bahmni.appointments')
                 return $http.post(Bahmni.Appointments.Constants.searchAppointmentUrl, appointment, {
                     withCredentials: true,
                     headers: {"Accept": "application/json", "Content-Type": "application/json"}
+                }).then(function(response) {
+                    if (response.data && Array.isArray(response.data)) {
+                        priorityMappingService.applyPriorityMapping(response.data);
+                    }
+                    return response;
                 });
             };
 
@@ -37,6 +42,11 @@ angular.module('bahmni.appointments')
                     params: params,
                     withCredentials: true,
                     headers: {"Accept": "application/json", "Content-Type": "application/json"}
+                }).then(function(response) {
+                    if (response.data && Array.isArray(response.data)) {
+                        priorityMappingService.applyPriorityMapping(response.data);
+                    }
+                    return response;
                 });
             };
 
