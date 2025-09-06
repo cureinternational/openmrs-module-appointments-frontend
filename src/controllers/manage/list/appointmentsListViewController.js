@@ -207,7 +207,7 @@ angular.module('bahmni.appointments')
             };
 
             var setFilteredAppointmentsInPatientSearch = function (appointments) {
-                 $scope.filteredAppointments = appointments.map(function (appointment) {
+                $scope.filteredAppointments = appointments.map(function (appointment) {
                     appointment.date = appointment.startDateTime;
                     return appointment;
                 });

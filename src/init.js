@@ -92,7 +92,6 @@ require("./directives/patientSearch.js");
 require("./services/appointmentsServiceService.js");
 require("./services/specialityService.js");
 require("./services/appointmentsService.js");
-require("./services/priorityMappingService.js");
 require("./services/calendarViewPopUp.js");
 require("./services/appointmentCommonService.js");
 require("./services/checkinPopUp.js");

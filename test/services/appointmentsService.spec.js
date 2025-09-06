@@ -12,16 +12,13 @@ describe('AppointmentsService', function () {
         mockHttp.get.and.returnValue(specUtil.simplePromise({data:{results: []}}));
         mockHttp.post.and.returnValue(specUtil.simplePromise({data: []}));
         mockHttp.put.and.returnValue(specUtil.simplePromise({}));
-        appDescriptor = jasmine.createSpyObj('appDescriptor', ['formatUrl']);
+        appDescriptor = jasmine.createSpyObj('appDescriptor', ['formatUrl', 'getConfigValue']);
+        appDescriptor.getConfigValue.and.returnValue([]);
         appService = jasmine.createSpyObj('appService', ['getAppDescriptor']);
         appService.getAppDescriptor.and.returnValue(appDescriptor);
         
-        var mockPriorityMappingService = jasmine.createSpyObj('priorityMappingService', ['applyPriorityMapping']);
-        mockPriorityMappingService.applyPriorityMapping.and.returnValue([]);
-        
         $provide.value('$http', mockHttp);
-        $provide.value('appService', appService);
-        $provide.value('priorityMappingService', mockPriorityMappingService);
+    $provide.value('appService', appService);
     }));
     beforeEach(inject(['appointmentsService', function (appointmentsServiceInjected) {
         appointmentsService = appointmentsServiceInjected;
