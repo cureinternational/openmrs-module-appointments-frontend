@@ -4,7 +4,7 @@ angular.module('bahmni.appointments')
     .controller('AppointmentsListViewController', ['$scope', '$state', '$rootScope', '$translate', '$stateParams', 'spinner',
         'appointmentsService', 'appService', 'appointmentsFilter', 'printer', 'checkinPopUp', 'confirmBox', 'ngDialog', 'messagingService', 'appointmentCommonService', '$interval','$window','$location',
         function ($scope, $state, $rootScope, $translate, $stateParams, spinner, appointmentsService, appService,
-                  appointmentsFilter, printer, checkinPopUp, confirmBox, ngDialog, messagingService, appointmentCommonService, $interval, $window, $location,) {
+                  appointmentsFilter, printer, checkinPopUp, confirmBox, ngDialog, messagingService, appointmentCommonService, $interval, $window, $location) {
             $scope.enableSpecialities = appService.getAppDescriptor().getConfigValue('enableSpecialities');
             $scope.enableServiceTypes = appService.getAppDescriptor().getConfigValue('enableServiceTypes');
             $scope.priorityOptionsList = appService.getAppDescriptor().getConfigValue('priorityOptionsList') || [];
@@ -116,7 +116,6 @@ angular.module('bahmni.appointments')
                 $scope.appointments = response.data;
                 $scope.filteredAppointments = appointmentsFilter($scope.appointments, $stateParams.filterParams);
                 if($scope.getCurrentTabName() === AWAITING_APPOINTMENTS_TAB_NAME){
-                    modifyAppointmentPriorities();
                     $scope.filteredAppointments = _.sortBy($scope.filteredAppointments, "dateCreated");
                 }
                 $rootScope.appointmentsData = $scope.filteredAppointments;
@@ -132,19 +131,6 @@ angular.module('bahmni.appointments')
                     return appointment.uuid === $scope.selectedAppointment.uuid;
                 });
             };
-
-            var modifyAppointmentPriorities = function(){
-                $scope.appointments.map((appointment) => {
-                    var priorityModified = false;
-                    $scope.priorityOptionsList.map((priority) => {
-                        if(priority.value === appointment.priority){
-                            appointment.priority = priority.label;
-                            priorityModified = true;
-                        }
-                    });
-                    if(priorityModified) return ;
-                });
-            }
 
             var sortAppointmentsByAppointmentCreationDate = function(a,b){
                 return new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime();
