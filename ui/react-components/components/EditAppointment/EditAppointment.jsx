@@ -237,7 +237,7 @@ const EditAppointment = props => {
         }
         return isWalkInAppointment() ? WALK_IN_APPOINTMENT_TYPE : SCHEDULED_APPOINTMENT_TYPE;
     };
-                                                    
+
     const getAppointmentRequest = () => {
         let appointment = {
             uuid: appointmentUuid,
@@ -771,6 +771,7 @@ const EditAppointment = props => {
                                             width={"160px"}
                                             value={appointmentDetails.recurringEndDate}
                                             isDisabled={componentsDisableStatus.endDate}
+                                            intl={intl}
                                             minDate={(appointmentDetails.appointmentDate && moment(appointmentDetails.appointmentDate).format("MM-DD-YYYY"))
                                                 || moment().format("MM-DD-YYYY")}
                                             testId={"recurring-end-date-selector"}/>

@@ -523,7 +523,7 @@ const AddAppointment = props => {
         var allowVirtualConsultation = appConfig && appConfig.allowVirtualConsultation;
         if (allowVirtualConsultation) {
             return <AppointmentType appointmentType={appointmentDetails.appointmentType}
-                    isTeleconsultation={appointmentDetails.teleconsultation}     
+                    isTeleconsultation={appointmentDetails.teleconsultation}
                     onChange={(e) => {
                         updateAppointmentDetails({ teleconsultation: e });
                     }} />;
@@ -604,6 +604,7 @@ const AddAppointment = props => {
                                 }}
                                 minDate={moment().format("MM-DD-YYYY")}
                                 isRequired={requiredFields.recurringStartDate}
+                                intl={intl}
                                 title={"Appointment start date"}/>
                             <ErrorMessage message={errors.startDateError ? errorTranslations.dateErrorMessage : undefined}/>
                         </div>
@@ -725,6 +726,7 @@ const AddAppointment = props => {
                                                 }
                                             }}
                                             width={"160px"}
+                                            intl={intl}
                                             minDate = { (appointmentDetails.recurringStartDate && moment(appointmentDetails.recurringStartDate).format("MM-DD-YYYY"))
                                                 || moment().format("MM-DD-YYYY")}
                                             testId={"recurring-end-date-selector"}/>:
@@ -756,7 +758,7 @@ const AddAppointment = props => {
                     </div>:
                     //Regular Appointments
                     <div >
-                        {isAppointmentStatusOptionEnabled(appConfig) && 
+                        {isAppointmentStatusOptionEnabled(appConfig) &&
                             <div data-testid="appointment-status">
                                 <RadioButtonGroup
                                     legendText={statusTitleText}
