@@ -72,7 +72,7 @@ import Notification from "../Notifications/Notifications.jsx";
 
 const AddAppointment = props => {
 
-    const {appConfig, intl, appointmentParams, currentProvider, urlParams, setIsAppointmentModalOpen } = props;
+    const {appConfig, intl, appointmentParams, currentProvider, urlParams, setIsAppointmentModalOpen, holidays } = props;
     const {setViewDate} = React.useContext(AppContext);
     const errorTranslations = getErrorTranslations(intl);
 
@@ -146,6 +146,7 @@ const AddAppointment = props => {
     const [serviceErrorMessage, setServiceErrorMessage] = useState('');
     const [disableSaveButton, setDisableSaveButton] = useState(false);
     const [requiredFields, setRequiredFields] = useState(initialRequired);
+    const [showHolidayWarning, setShowHolidayWarning] = useState(false);
 
     useEffect(()=>{
         setAppointmentTouched((prevState)=>{
@@ -784,8 +785,16 @@ const AddAppointment = props => {
                                     if(date.length > 0) {
                                         const selectedDate = moment(date[0]).toDate();
                                         updateAppointmentDetails({appointmentDate: selectedDate});
+
+                                        if (holidays) {
+                                            const formattedHolidays = holidays.replace(/\s+/g, '').split(',');
+                                            const formattedDate = moment(date[0]).format('YYYY-MM-DD');
+                                            const isHoliday = formattedHolidays.includes(formattedDate);
+                                            setShowHolidayWarning(isHoliday);
+                                        }
                                     } else {
                                         updateAppointmentDetails({appointmentDate: null});
+                                        setShowHolidayWarning(false);
                                     }
                                     !appConfig.prioritiesForDateless.
                                     find((priority) => priority === appointmentDetails.priority) &&
@@ -793,6 +802,8 @@ const AddAppointment = props => {
                                 }}
                                 minDate={moment().format("MM-DD-YYYY")}
                                 isRequired={requiredFields.appointmentStartDate}
+                                showWarning={showHolidayWarning}
+                                intl={intl}
                                 title={"Appointment date"}/>
                             <ErrorMessage message={errors.appointmentDateError ? errorTranslations.dateErrorMessage : undefined}/>
                         </div>
