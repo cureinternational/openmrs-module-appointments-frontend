@@ -20,7 +20,8 @@ class AppointmentContainer extends Component {
             locale: getLocale() === 'pt_BR' ? 'pt-BR': getLocale(),
             messages: translations[props.locale],
             appConfig: null,
-            isAppointmentModalOpen: true
+            isAppointmentModalOpen: true,
+            holidays: null
         };
 
         this.setIsAppointmentModalOpen = this.setIsAppointmentModalOpen.bind(this);
@@ -28,6 +29,11 @@ class AppointmentContainer extends Component {
         (async () => {
             this.setState({messages: await getMessages(getLocale())});
             this.setState({appConfig: await getAppConfig()});
+            this.setState({holidays:  await getFromGlobalProperty('appointments.holidays')});
+            if (this.state.holidays) {
+                this.setState({holidays: this.state.holidays.replace(/\s+/g, '').split(',')});
+            }
+
         })();
         moment.locale(getLocale() === 'pt_BR' ? 'pt-BR': getLocale());
     }
@@ -37,15 +43,15 @@ class AppointmentContainer extends Component {
     };
 
     render() {
-        const { locale, messages, appConfig, isAppointmentModalOpen } = this.state;
+        const { locale, messages, appConfig, isAppointmentModalOpen, holidays } = this.state;
         const {appointmentUuid,isRecurring, setViewDate, onBack, appointmentParams, currentProvider, urlParams, editConflict, resetEditConflict} = this.props;
         return (
             <AppContext.Provider value={{onBack: onBack, setViewDate: setViewDate}}>
                 <IntlProvider defaultLocale='en' locale={locale} messages={messages}>
                     <div>
                     {appointmentUuid
-                        ? <EditAppointment appConfig={appConfig} appointmentUuid={appointmentUuid} isRecurring={isRecurring}  currentProvider={currentProvider} setIsAppointmentModalOpen={this.setIsAppointmentModalOpen}/>
-                        : <AddAppointment appConfig={appConfig} appointmentParams={appointmentParams} currentProvider={currentProvider} urlParams={urlParams} setIsAppointmentModalOpen={this.setIsAppointmentModalOpen}/>
+                        ? <EditAppointment appConfig={appConfig} appointmentUuid={appointmentUuid} isRecurring={isRecurring}  currentProvider={currentProvider} setIsAppointmentModalOpen={this.setIsAppointmentModalOpen} holidays={holidays}/>
+                        : <AddAppointment appConfig={appConfig} appointmentParams={appointmentParams} currentProvider={currentProvider} urlParams={urlParams} setIsAppointmentModalOpen={this.setIsAppointmentModalOpen} holidays={holidays}/>
                     }
                     { isAppointmentModalOpen && editConflict &&  <CancelConfirmationWrapper show={editConflict} appointmentUuid={appointmentUuid} onBack={onBack} resetEditConflict={resetEditConflict}/>}
                     </div>
